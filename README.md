@@ -1,2 +1,2 @@
 # JavaCompiler
-Compiler made in Java
+Java made compiler for the Compilers and OS class 
