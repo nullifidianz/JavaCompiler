@@ -8,13 +8,26 @@ public abstract class AFD {
 
     public boolean isTokenSeparator(CharacterIterator code) {
         return code.current() == ' ' ||
-            code.current() == '+' ||
-            code.current() == '-' ||
-            code.current() == '*' ||
-            code.current() == '/' ||
-            code.current() == '(' ||
-            code.current() == ')' ||
-            code.current() == '\n' ||
-            code.current() == CharacterIterator.DONE;
+                code.current() == '+' ||
+                code.current() == '-' ||
+                code.current() == '*' ||
+                code.current() == '/' ||
+                code.current() == '(' ||
+                code.current() == ')' ||
+                code.current() == '{' ||
+                code.current() == '}' ||
+                code.current() == '[' ||
+                code.current() == ']' ||
+                code.current() == '=' ||
+                code.current() == '>' ||
+                code.current() == '<' ||
+                code.current() == '!' ||
+                code.current() == ',' ||
+                code.current() == '.' ||
+                code.current() == ':' ||
+                code.current() == ';' ||
+                code.current() == '\n' ||
+                code.current() == '"' ||
+                code.current() == CharacterIterator.DONE;
     }
 }
