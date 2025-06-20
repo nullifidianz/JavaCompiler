@@ -19,10 +19,16 @@ replay_pid*
 /.classpath
 /.project
 /.vscode/
-
 # Ignorar arquivos de build e gerados
 /target/
 output.go
-
+target
 # Manter apenas arquivos essenciais: src/, pom.xml, README.md
 # (Os demais arquivos devem ser ignorados por padrão)
+
+# Ignorar arquivos de teste
+/src/test/
+/src/main/java/compiler/test/
+/src/main/java/compiler/parser/
+/src/main/java/compiler/lexer/
+/src/main/java/compiler/semantic/

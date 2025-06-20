@@ -31,23 +31,23 @@ public class SemanticAnalyzer {
     if (tipo1.equals(tipo2)) {
       return true;
     }
-    
+
     // Se um dos tipos for stringa, não é compatível com nenhum outro tipo
     if (tipo1.equals("stringa") || tipo2.equals("stringa")) {
       return false;
     }
-    
+
     // Se um dos tipos for booleano, não é compatível com nenhum outro tipo
     if (tipo1.equals("booleano") || tipo2.equals("booleano")) {
       return false;
     }
-    
+
     // intero e galleggiante são compatíveis entre si
     if ((tipo1.equals("intero") && tipo2.equals("galleggiante")) ||
         (tipo1.equals("galleggiante") && tipo2.equals("intero"))) {
       return true;
     }
-    
+
     return false;
   }
 
@@ -72,11 +72,11 @@ public class SemanticAnalyzer {
     Map<String, List<String>> funcoesTiposParametros = new HashMap<>();
     Map<String, String> tiposVariaveis = new HashMap<>(); // Mapa para armazenar tipos das variáveis
     boolean erro = false;
-    
+
     // Primeira passagem: coletar informações sobre funções e variáveis
     for (int i = 0; i < tokens.size(); i++) {
       Token token = tokens.get(i);
-      
+
       // Coleta tipos de variáveis
       if (token.getTipo().equals("ID") && i > 0) {
         Token prev = tokens.get(i - 1);
@@ -85,7 +85,7 @@ public class SemanticAnalyzer {
           tiposVariaveis.put(token.getLexema(), prev.getLexema());
         }
       }
-      
+
       if (token.getLexema().equals("funzione") && i + 1 < tokens.size() && tokens.get(i + 1).getTipo().equals("NOME")) {
         String nomeFunc = tokens.get(i + 1).getLexema();
         if (funcoes.contains(nomeFunc)) {
@@ -125,7 +125,7 @@ public class SemanticAnalyzer {
     // Segunda passagem: análise semântica
     for (int i = 0; i < tokens.size(); i++) {
       Token token = tokens.get(i);
-      
+
       // Verifica chamada de função
       if (token.getTipo().equals("NOME") && i + 1 < tokens.size() && tokens.get(i + 1).getLexema().equals("(")) {
         String nomeFunc = token.getLexema();
@@ -133,14 +133,14 @@ public class SemanticAnalyzer {
           System.err.println("Erro: função '" + nomeFunc + "' não declarada");
           throw new RuntimeException("Erro: função '" + nomeFunc + "' não declarada");
         }
-        
+
         // Conta e verifica argumentos passados
         int numArgs = 0;
         int j = i + 2; // Pula nome e '('
         List<String> tiposArgs = new ArrayList<>();
         while (j < tokens.size() && !tokens.get(j).getLexema().equals(")")) {
           Token arg = tokens.get(j);
-          if (arg.getTipo().equals("ID") || arg.getTipo().equals("NUM") || 
+          if (arg.getTipo().equals("ID") || arg.getTipo().equals("NUM") ||
               arg.getTipo().equals("TEXTO") || arg.getTipo().equals("NUMDECIMAL")) {
             numArgs++;
             // Determina o tipo do argumento
@@ -166,30 +166,30 @@ public class SemanticAnalyzer {
           }
           j++;
         }
-        
+
         // Verifica número de argumentos
         int expectedParams = funcoesParametros.get(nomeFunc);
         if (numArgs != expectedParams) {
-          System.err.println("Erro: função '" + nomeFunc + "' espera " + expectedParams + 
-                           " parâmetros, mas recebeu " + numArgs);
+          System.err.println("Erro: função '" + nomeFunc + "' espera " + expectedParams +
+              " parâmetros, mas recebeu " + numArgs);
           erro = true;
-          throw new RuntimeException("Erro: função '" + nomeFunc + "' espera " + expectedParams + 
-                           " parâmetros, mas recebeu " + numArgs);
+          throw new RuntimeException("Erro: função '" + nomeFunc + "' espera " + expectedParams +
+              " parâmetros, mas recebeu " + numArgs);
         }
-        
+
         // Verifica tipos dos argumentos
         List<String> tiposEsperados = funcoesTiposParametros.get(nomeFunc);
         for (int k = 0; k < tiposArgs.size(); k++) {
           String tipoArg = tiposArgs.get(k);
           String tipoEsperado = tiposEsperados.get(k);
           if (!tipoArg.equals(tipoEsperado)) {
-            System.err.println("Erro: tipo incompatível no argumento " + (k + 1) + 
-                             " da função '" + nomeFunc + "'. Esperado: " + tipoEsperado + 
-                             ", Recebido: " + tipoArg);
+            System.err.println("Erro: tipo incompatível no argumento " + (k + 1) +
+                " da função '" + nomeFunc + "'. Esperado: " + tipoEsperado +
+                ", Recebido: " + tipoArg);
             erro = true;
-            throw new RuntimeException("Erro: tipo incompatível no argumento " + (k + 1) + 
-                             " da função '" + nomeFunc + "'. Esperado: " + tipoEsperado + 
-                             ", Recebido: " + tipoArg);
+            throw new RuntimeException("Erro: tipo incompatível no argumento " + (k + 1) +
+                " da função '" + nomeFunc + "'. Esperado: " + tipoEsperado +
+                ", Recebido: " + tipoArg);
           }
         }
       }
@@ -204,14 +204,14 @@ public class SemanticAnalyzer {
               || prev.getLexema().equals("booleano") || prev.getLexema().equals("galleggiante"))) {
             tipoVar = prev.getLexema();
             isDeclaracao = true;
-            
+
             // Verifica se a variável já foi declarada
             if (declaradas.contains(token.getLexema())) {
               System.err.println("Erro: variável '" + token.getLexema() + "' já foi declarada anteriormente");
               erro = true;
               throw new RuntimeException("Erro: variável '" + token.getLexema() + "' já foi declarada anteriormente");
             }
-            
+
             // Verifica compatibilidade de tipo na atribuição
             boolean tipoCompativel = true;
             String valorAtribuido = null;
@@ -280,33 +280,35 @@ public class SemanticAnalyzer {
       }
 
       // Verifica comparações em condicionais e laços
-      if (token.getLexema().equals("se") || token.getLexema().equals("mentre") || 
+      if (token.getLexema().equals("se") || token.getLexema().equals("mentre") ||
           token.getLexema().equals("per") || token.getLexema().equals("fare")) {
         int j = i + 1;
         while (j < tokens.size() && !tokens.get(j).getLexema().equals("{")) {
           Token tk = tokens.get(j);
-          if (tk.getLexema().equals("==") || tk.getLexema().equals("!=") || 
-              tk.getLexema().equals(">") || tk.getLexema().equals("<") || 
+          if (tk.getLexema().equals("==") || tk.getLexema().equals("!=") ||
+              tk.getLexema().equals(">") || tk.getLexema().equals("<") ||
               tk.getLexema().equals(">=") || tk.getLexema().equals("<=")) {
-            
+
             // Pega o token antes do operador
             Token antes = tokens.get(j - 1);
             // Pega o token depois do operador
             Token depois = tokens.get(j + 1);
-            
+
             String tipoAntes = determinarTipoToken(antes, tiposVariaveis);
             String tipoDepois = determinarTipoToken(depois, tiposVariaveis);
-            
+
             if (tipoAntes == null || tipoDepois == null) {
               System.err.println("Erro: não foi possível determinar o tipo de uma das variáveis na comparação");
               erro = true;
               throw new RuntimeException("Erro: não foi possível determinar o tipo de uma das variáveis na comparação");
             }
-            
+
             if (!tiposCompativeisParaComparacao(tipoAntes, tipoDepois)) {
-              System.err.println("Erro: tipos incompatíveis na comparação. Tipo1: " + tipoAntes + ", Tipo2: " + tipoDepois);
+              System.err
+                  .println("Erro: tipos incompatíveis na comparação. Tipo1: " + tipoAntes + ", Tipo2: " + tipoDepois);
               erro = true;
-              throw new RuntimeException("Erro: tipos incompatíveis na comparação. Tipo1: " + tipoAntes + ", Tipo2: " + tipoDepois);
+              throw new RuntimeException(
+                  "Erro: tipos incompatíveis na comparação. Tipo1: " + tipoAntes + ", Tipo2: " + tipoDepois);
             }
           }
           j++;
@@ -336,7 +338,8 @@ public class SemanticAnalyzer {
     StringBuilder sb = new StringBuilder();
     sb.append("package main\n\n");
 
-    // verifica se precisa importar fmt -------------------------------------------------------------------------------------------------
+    // verifica se precisa importar fmt
+    // -------------------------------------------------------------------------------------------------
     for (Token t : tokens) {
       if (t.getLexema().equals("carattere") || t.getLexema().equals("leggere")) {
         needsFmt = true;
@@ -344,15 +347,18 @@ public class SemanticAnalyzer {
       }
     }
 
-    // adiciona importacao de fmt se necessario -------------------------------------------------------------------------------------------------
+    // adiciona importacao de fmt se necessario
+    // -------------------------------------------------------------------------------------------------
     if (needsFmt) {
       sb.append("import (\n\t\"fmt\"\n)\n\n");
     }
 
-    // inicia o main ------------------------------------------------------------------------------------------------------------------------------
+    // inicia o main
+    // ------------------------------------------------------------------------------------------------------------------------------
     sb.append("func main() {\n");
 
-    // traduz o codigo ------------------------------------------------------------------------------------------------------------------------------
+    // traduz o codigo
+    // ------------------------------------------------------------------------------------------------------------------------------
     for (int i = 0; i < tokens.size(); i++) {
       Token t = tokens.get(i);
       String lex = t.getLexema();
@@ -366,14 +372,14 @@ public class SemanticAnalyzer {
         String nomeFunc = tokens.get(i + 1).getLexema();
         i++;
         sb.append("func ").append(nomeFunc).append("(");
-        
+
         // Parâmetros
         int j = i + 1;
         boolean dentroPar = false;
         boolean primeiroParam = true;
         StringBuilder paramBuilder = new StringBuilder();
         String tipoParam = "";
-        
+
         while (j < tokens.size()) {
           Token tk = tokens.get(j);
           if (tk.getLexema().equals("(")) {
@@ -385,7 +391,7 @@ public class SemanticAnalyzer {
             i = j;
             break;
           }
-          
+
           // Parâmetros: ID + tipo
           if (tk.getLexema().equals(",")) {
             if (!primeiroParam) {
@@ -413,12 +419,12 @@ public class SemanticAnalyzer {
           primeiroParam = false;
           j++;
         }
-        
+
         // Adiciona o último parâmetro se houver
         if (paramBuilder.length() > 0) {
           sb.append(paramBuilder.toString().trim());
         }
-        
+
         sb.append(") {\n");
         continue;
       }

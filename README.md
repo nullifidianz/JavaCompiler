@@ -52,21 +52,16 @@ NUMDECIMAL → (0-9)+ '.' (0-9)+
 
 TEXTO → '"' (0-9 | a-z | A-Z | ' ' )+ '"'
 
-# Server
+---
 
-# Compilador como Servidor
-
-Este projeto implementa um compilador como um servidor web que recebe código para compilação via requisições HTTP.
+# Como Compilar e Rodar o Compilador
 
 ## Requisitos
 
 - Java 11 ou superior
-- Maven
-- Postman (ou qualquer cliente HTTP) para testar as requisições
+- Maven (opcional, mas recomendado para build)
 
-## Como Compilar e Rodar o Compilador
-
-### Compilar o Projeto
+## Compilar o Projeto
 
 No terminal, execute:
 
@@ -74,86 +69,50 @@ No terminal, execute:
 mvn clean package
 ```
 
-O arquivo JAR será gerado em `target/`.
+O projeto será compilado e os arquivos .class ficarão em `target/classes`.
 
-### Rodar o Servidor
+## Rodar o Compilador (Offline)
 
-No terminal, execute:
-
-```
-mvn spring-boot:run
-```
-
-Ou, se preferir rodar o JAR diretamente após compilar:
+Para rodar o compilador localmente (linha de comando), execute:
 
 ```
-java -jar target/compiler-2.0-1.0-SNAPSHOT.jar
+java -cp target/classes compiler.main.Main
 ```
 
-O servidor estará disponível em http://localhost:8080
+Você pode adaptar o Main.java para aceitar argumentos de entrada/saída conforme desejar.
 
-## Endpoints Disponíveis
+## Rodar o Servidor HTTP (Java Puro)
 
-### Verificar Status do Servidor
+O projeto possui um servidor HTTP simples, sem Spring Boot, implementado em `compiler.server.CompilerServer`.
 
-```
-GET http://localhost:8080/api/compiler/health
-```
-
-Resposta esperada:
-
-```json
-{
-  "status": "Server Rodando"
-}
-```
-
-### Compilar Código
+Para rodar o servidor:
 
 ```
-POST http://localhost:8080/api/compiler/compile
+java -cp target/classes compiler.server.CompilerServer
 ```
 
-Corpo da requisição (JSON):
+O servidor será iniciado na porta 8080. Você pode enviar requisições POST para `http://localhost:8080/compile` com o código a ser compilado no corpo da requisição (texto puro).
 
-```json
-{
-  "code": "stringa _s = \"Hello, World!\"; carattere << $_s;"
-}
+### Exemplo de requisição com curl:
+
+```
+curl -X POST --data-binary @src/main/resources/codigo.txt http://localhost:8080/compile
 ```
 
-Resposta de sucesso:
+---
 
-```json
-{
-    "Compilado com Sucesso": true,
-    "Resultado": "código compilado...",
-    "tokens": [...]
-}
-```
+# Estrutura do Projeto
 
-Resposta de erro:
+- src/main/java: código-fonte principal
+- src/main/resources: arquivos de recursos (ex: codigo.txt)
+- target/: arquivos gerados na compilação (ignorado no git)
+- pom.xml: configuração do Maven
+- README.md: este arquivo
 
-```json
-{
-  "Compilado com Sucesso": false,
-  "erro": "mensagem de erro",
-  "Código Inválido": "código que causou o erro"
-}
-```
+---
 
-## Testando com Postman
+# Observações
 
-1. Abra o Postman
-2. Crie uma nova requisição POST para `http://localhost:8080/api/compiler/compile`
-3. Configure o corpo da requisição:
-   - Selecione "raw"
-   - Escolha "JSON" no dropdown
-   - Cole o JSON com o código a ser compilado
-4. Envie a requisição
-
-# ... existing code ...
-
-- Está em `src/main/java/compiler/main/`. Se for um arquivo de exemplo ou entrada, considere movê-lo para uma pasta `resources/`.
-
-# ... existing code ...
+- O projeto NÃO depende de Spring Boot para rodar o servidor.
+- O .gitignore está configurado para manter apenas o mínimo essencial: src/, pom.xml e README.md.
+- Para dúvidas ou sugestões, abra uma issue ou entre em contato.
